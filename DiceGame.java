@@ -20,10 +20,11 @@ public class DiceGame {
 	 * @return boolean 
 	 */
 	public boolean addPlayer(String name) {
-		for(Player p : players)
+		for(Player p : players) {
 		if(p.getName().equalsIgnoreCase(name)){
 			System.out.println("Player already playing.\n");
 			return false;
+		}
 		}
 		Player newPlayer = new Player(name);
 		players.add(newPlayer);
@@ -64,37 +65,63 @@ public class DiceGame {
 	/**
 	 * Place bet amount
 	 */
-	public double betPlaced() {
-		double bet = 0;
+	public void betPlaced() {
+		
 		for(int i = 0; i<players.size();i++) {
 		System.out.println(players.get(i).getName() + " How much are you betting?");
-		 bet = scanner.nextDouble();
-		while(bet> players.get(i).getMoney()) {
+		 players.get(i).setBet(scanner.nextDouble());
+		 scanner.nextLine();
+		while(players.get(i).getBet()> players.get(i).getMoney()) {
 			System.out.println(" Current balance: "+ players.get(i).getMoney() + " Insufficent amount, bet a lesser amount");
-			bet = scanner.nextDouble();
+			 players.get(i).setBet(scanner.nextDouble());
+			scanner.nextLine();
 		}
-		if(bet<= players.get(i).getMoney()) {
-			players.get(i).setMoney(players.get(i).getMoney() - bet);
-			System.out.println(players.get(i).getName() + " Bet: " + bet);
+		if(players.get(i).getBet()<= players.get(i).getMoney()) {
+			players.get(i).setMoney(players.get(i).getMoney() -players.get(i).getBet() );
+			System.out.println(players.get(i).getName() + " Bet: " + players.get(i).getBet());
 			}
-		
+		//players.get(i).setMoney(players.get(i).getMoney() - bet);
 		}
-		return bet;
+		
 	}
 	/**
 	 * Print list of players
 	 */
 	public void printPlayers() {
 		for(Player p : players) {
-			System.out.println(p.getName() + " " + p.getMoney());
+			System.out.println(p.getName() + " ----> Balance: " + p.getMoney());
 		}
 	}
 	
-	/*
-	 * public void playGame() { double bet = betPlaced(); for(int i = 0; i<
-	 * players.size();i++) { if(players.get(i).getDice1()+players.get(i).getDice2()
-	 * == 2) { System.out.println("Snake eye! ");
-	 * 
-	 * } } }
-	 */
+	public void diceRolls() {
+		for(int i = 0; i < players.size(); i++) {
+			System.out.println(players.get(i).getName() + " Dice 1: "+ players.get(i).getDice1() + " Dice 2: " +
+		players.get(i).getDice2() + "\nScore: " + players.get(i).getScore() + "\n");
+		}
+	}
+	
+	
+	  public void playGame() {
+		  int max = Integer.MAX_VALUE;
+		  Player winningPlayer = players.get(1);
+		  if(players.size() < 2) {
+			  System.out.println(players.size() + " Players, not Enough players Add more players!");
+		  }else
+		  betPlaced();
+		  diceRolls();
+		  for(int i = 0; i< players.size() -1 ;i++) {
+			 if(players.get(i).getScore() > players.get(i+1).getScore()) {
+				// max = players.get(i).getScore();
+				  winningPlayer = players.get(i);
+			 }
+			 if(players.get(i).getScore() ==players.get(i+1).getScore()) {
+				 System.out.println("Tie!");
+				 return;
+			 }
+		  	}
+		  	winningPlayer.setMoney(winningPlayer.getMoney() + (winningPlayer.getBet()*2));
+		  	System.out.println("Winner: " + winningPlayer.getName());
+		  	System.out.println(winningPlayer.getName() + "---> Balance: " + winningPlayer.getMoney());
+		  }
+	 
 }
